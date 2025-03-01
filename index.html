@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>塔罗牌抽卡</title>
+</head>
+<body>
+    <button onclick="drawCards(3)">抽3张</button>
+    <button onclick="drawCards(5)">抽5张</button>
+    <div id="result" style="margin-top: 20px;"></div>
+
+    <script>
+        // 预生成完整的78张塔罗牌
+        const fullDeck = (() => {
+            const majorArcana = ['愚者', '魔术师', '女祭司', '皇后', '皇帝', '教皇', '恋人', '战车', 
+                              '力量', '隐士', '命运之轮', '正义', '倒吊人', '死神', '节制', '恶魔', 
+                              '塔', '星星', '月亮', '太阳', '审判', '世界'];
+            
+            const suits = ['权杖', '圣杯', '宝剑', '星币'];
+            const courtCards = ['侍从', '骑士', '皇后', '国王'];
+            const minorArcana = [];
+            
+            // 生成小阿卡那牌（56张）
+            for (const suit of suits) {
+                // 数字牌 1-10
+                for (let i = 1; i <= 10; i++) {
+                    minorArcana.push(`${suit} ${i}`);
+                }
+                // 宫廷牌
+                for (const court of courtCards) {
+                    minorArcana.push(`${suit}${court}`);
+                }
+            }
+            
+            // 合并大阿卡那和小阿卡那
+            return [...majorArcana.map(name => ({ name })), 
+                   ...minorArcana.map(name => ({ name }))];
+        })();
+
+        function createNewShuffledDeck() {
+            // 创建牌组副本并洗牌
+            const deck = [...fullDeck];
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        function drawCards(numberOfCards) {
+            const deck = createNewShuffledDeck();
+            const drawnCards = deck.slice(0, numberOfCards).map(card => ({
+                name: card.name,
+                direction: Math.random() >= 0.5 ? '正位' : '逆位'
+            }));
+            
+            displayResult(drawnCards);
+        }
+
+        function displayResult(cards) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = cards.map((card, index) => 
+                `第${index + 1}张: ${card.name} - ${card.direction}`
+            ).join('<br>');
+        }
+    </script>
+</body>
+</html>
